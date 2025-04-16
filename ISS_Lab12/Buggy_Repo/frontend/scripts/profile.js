@@ -1,4 +1,4 @@
-
+const baseURL = "http://localhost:8000";
 async function loadUsers() {
   const res = await fetch(`/users`);
   const users = await res.json();
@@ -23,6 +23,22 @@ async function loadUsers() {
   });
 }
 
+// Load all users in frontend
+async function loadUsers() {
+  try {
+    const response = await fetch(`${baseURL}/users`);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch users: ${response.status}`);
+    }
+    const users = await response.json();
+    renderUsers(users);
+  } catch (error) {
+    console.error("Error loading users:", error);
+    document.getElementById("userCount").textContent = "Failed to load users";
+  }
+}
+
+
 document.getElementById("search").addEventListener("input", async (e) => {
   const term = e.target.value.toLowerCase();
   const res = await fetch(`${baseURL}/users`);
@@ -40,7 +56,7 @@ document.getElementById("search").addEventListener("input", async (e) => {
     const deleteBtn = document.createElement("button");
     deleteBtn.textContent = "Delete";
     deleteBtn.onclick = async () => {
-      await fetch(`/users/${user._id}`, { method: "PATCH" });
+      await fetch(`/users/${user._id}`, { method: "DELETE" });
       loadUsers();
     };
 
